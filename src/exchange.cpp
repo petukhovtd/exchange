@@ -46,13 +46,17 @@ ActorId Exchange::InsertImpl( const ActorPtr& actor )
 
 bool Exchange::SendImpl( ActorId id, const MessagePtr& message )
 {
-     std::lock_guard< std::mutex > lock( mutex_ );
-     const auto it = actors_.find( id );
-     if( it == actors_.end() )
+     ActorPtr actor = nullptr;
      {
-          return false;
+          std::lock_guard< std::mutex > lock( mutex_ );
+          const auto it = actors_.find( id );
+          if( it == actors_.end() )
+          {
+               return false;
+          }
+          actor = it->second.lock();
      }
-     ActorPtr actor = it->second.lock();
+
      if( !actor )
      {
           return false;
