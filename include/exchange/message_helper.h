@@ -1,38 +1,31 @@
-#ifndef EXCHANGE_MESSAGE_HELPER_H
-#define EXCHANGE_MESSAGE_HELPER_H
+#pragma once
 
-#include <exchange/i_message.h>
+#include <exchange/imessage.h>
 #include <memory>
 
-namespace exchange
-{
+namespace exchange {
 
-template< typename T >
-class MessageHelper: public IMessage
-{
+template<typename T>
+class MessageHelper : public IMessage {
 public:
-     using Ptr = std::shared_ptr< T >;
+  using Ptr = std::shared_ptr<T>;
 
-     MessageHelper() = default;
+  MessageHelper(const MessageHelper &) = delete;
 
-     MessageHelper( const MessageHelper& ) = delete;
+  MessageHelper(MessageHelper &&) = delete;
 
-     MessageHelper( MessageHelper&& ) = delete;
+  MessageHelper &operator=(const MessageHelper &) = delete;
 
-     MessageHelper& operator=( const MessageHelper& ) = delete;
+  MessageHelper &operator=(MessageHelper &&) = delete;
 
-     MessageHelper& operator=( MessageHelper&& ) = delete;
+  template<typename... Args>
+  static Ptr Create(Args... t) {
+    return std::make_shared<T>(t...);
+  }
 
-     /// @brief Создание экземпляра класса
-     /// @param t параметры конструктора
-     /// @return экземпляр класса
-     template< typename... Args >
-     static Ptr Create( Args... t )
-     {
-          return std::make_shared< T >( t... );
-     }
+protected:
+  MessageHelper() = default;
+
 };
 
-}
-
-#endif
+}// namespace exchange

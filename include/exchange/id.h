@@ -1,17 +1,13 @@
-#ifndef EXCHANGE_ID_H
-#define EXCHANGE_ID_H
+#pragma once
 
 #include <optional>
 
-namespace exchange
-{
+namespace exchange {
 
 using ActorId = unsigned long long;
 
-using ActorIdOpt = std::optional< ActorId >;
+using ActorIdOpt = std::optional<ActorId>;
 
-static const constexpr ActorId startId = 0;
+const constexpr ActorId startId = 0;
 
-}
-
-#endif
+}// namespace exchange
