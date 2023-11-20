@@ -2,6 +2,7 @@
 #include "common/test_message.h"
 #include "common/test_types.h"
 #include "common/timer.h"
+#include "exchange/actor_storage_a.h"
 #include <exchange/actor_storage_ht.h>
 #include <exchange/actor_storage_v.h>
 #include <exchange/exchange.h>
@@ -10,7 +11,7 @@
 #include <vector>
 
 struct TestParams {
-  size_t actors;
+  size_t receivers;
   size_t messages;
   exchange::ExchangePtr exchange;
 };
@@ -18,7 +19,7 @@ struct TestParams {
 void PrintReport(std::ostream &os, const std::string &name, const TestParams &params, const Timer &timer) {
   os
       << std::setw(15) << name
-      << std::setw(15) << "actors: " << std::setw(10) << params.actors
+      << std::setw(15) << "actors: " << std::setw(10) << params.receivers
       << std::setw(15) << "messages: " << std::setw(10) << params.messages
       << std::setw(15) << "time: " << std::setw(10) << timer.diff
       << std::setw(15) << "mpn: " << std::setw(10) << static_cast<double>(params.messages) / timer.diff
@@ -27,13 +28,19 @@ void PrintReport(std::ostream &os, const std::string &name, const TestParams &pa
 
 void NoExchangeTest(const TestParams &params) {
   TestData data = 1;
-  const auto receiver = TestActor::Create(params.exchange);
+  std::vector<exchange::ActorPtr> receivers;
+  receivers.reserve(params.receivers);
+
+  for (int i = 0; i < params.receivers; ++i) {
+    receivers.push_back(TestActor::Create(params.exchange));
+  }
 
   Timer timer;
   timer.Start();
   for (size_t i = 0; i < params.messages; ++i) {
+    const size_t actorIndex = i % params.receivers;
     const auto msg = TestMessage::Create(data);
-    receiver->Receive(msg);
+    receivers[actorIndex]->Receive(msg);
     ++data;
   }
   timer.Stop();
@@ -43,19 +50,18 @@ void NoExchangeTest(const TestParams &params) {
 void ExchangeTest(const std::string &name, const TestParams &params) {
   TestData data = 1;
 
-  std::vector<TestActor::Ptr> senders;
-  for (int i = 0; i < params.actors; ++i) {
-    senders.emplace_back(TestActor::Create(params.exchange));
-  }
+  auto sender = TestActor::Create(params.exchange);
 
-  static const auto receiver = TestActor::Create(params.exchange);
-  const auto receiverId = params.exchange->Add(receiver);
+  for (int i = 0; i < params.receivers; ++i) {
+    const auto receiver = TestActor::Create(params.exchange);
+    params.exchange->Add(receiver);
+  }
 
   Timer timer;
   timer.Start();
   for (size_t i = 0; i < params.messages; ++i) {
-    const size_t actorIndex = i % params.actors;
-    senders[actorIndex]->Send(receiverId, data);
+    const size_t actorId = i % params.receivers + 1;
+    sender->Send(actorId, data);
     ++data;
   }
   timer.Stop();
@@ -89,6 +95,12 @@ int main() {
 
   for (auto param : params) {
     NoExchangeTest(param);
+    {
+      exchange::ActorStoragePtr asv = std::make_unique<exchange::ActorStorageA>();
+      const auto ex = std::make_shared<exchange::Exchange>(std::move(asv));
+      param.exchange = ex;
+      ExchangeTest("ActorStorageA", param);
+    }
     {
       exchange::ActorStoragePtr asv = std::make_unique<exchange::ActorStorageV>();
       const auto ex = std::make_shared<exchange::Exchange>(std::move(asv));

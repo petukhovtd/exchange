@@ -27,7 +27,7 @@ public:
   ActorPtr Find(ActorId id) override;
 
 private:
-  std::vector<StorageItem> storage_;
+  std::vector<StorageItem> storage_{};
 };
 
 }// namespace exchange

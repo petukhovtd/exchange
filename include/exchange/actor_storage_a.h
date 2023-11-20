@@ -1,15 +1,18 @@
 #pragma once
 
 #include <exchange/iactor_storage.h>
-#include <unordered_map>
+#include <vector>
 
 namespace exchange {
 
-class ActorStorageHT : public IActorStorage {
+class ActorStorageA : public IActorStorage {
 public:
-  ActorStorageHT() = default;
 
-  ~ActorStorageHT() override = default;
+  ActorStorageA() = default;
+
+  explicit ActorStorageA( size_t preSize );
+
+  ~ActorStorageA() override = default;
 
   void Add(ActorId id, const ActorPtr &actor) override;
 
@@ -18,7 +21,7 @@ public:
   ActorPtr Find(ActorId id) override;
 
 private:
-  std::unordered_map<ActorId, ActorPtr> storage_{};
+  std::vector<ActorPtr> storage_{};
 };
 
 }// namespace exchange

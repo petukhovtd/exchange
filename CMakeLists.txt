@@ -10,6 +10,7 @@ set(SOURCE
         src/iactor.cpp
         src/actor_storage_ht.cpp
         src/actor_storage_v.cpp
+        src/actor_storage_a.cpp
         src/exchange.cpp
 )
 
