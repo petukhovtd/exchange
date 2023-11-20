@@ -96,7 +96,7 @@ int main() {
   for (auto param : params) {
     NoExchangeTest(param);
     {
-      exchange::ActorStoragePtr asv = std::make_unique<exchange::ActorStorageA>();
+      exchange::ActorStoragePtr asv = std::make_unique<exchange::ActorStorageA>(param.receivers);
       const auto ex = std::make_shared<exchange::Exchange>(std::move(asv));
       param.exchange = ex;
       ExchangeTest("ActorStorageA", param);
