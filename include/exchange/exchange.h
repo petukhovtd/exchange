@@ -1,53 +1,38 @@
-#ifndef EXCHANGE_EXCHANGE_H
-#define EXCHANGE_EXCHANGE_H
+#pragma once
 
+#include <exchange/iactor.h>
+#include <exchange/iactor_storage.h>
 #include <exchange/id.h>
-#include <exchange/i_actor.h>
-#include <exchange/i_message.h>
+#include <exchange/iexchange.h>
+#include <exchange/imessage.h>
 
-#include <unordered_map>
-#include <mutex>
+namespace exchange {
 
-namespace exchange
-{
-
-class Exchange
-{
+class Exchange : public IExchange {
 public:
-     /// @brief Добавить актора для обмена
-     /// @param actor
-     /// @return id актора
-     static ActorId Insert( const ActorPtr& actor );
+  explicit Exchange(ActorStoragePtr storage);
 
-     /// @brief Отправить сообщение актору
-     /// @param id актора
-     /// @param message сообщение
-     /// @return true сообщение отправлено актору
-     /// @return false актор с таким id не найден, ссылка на актор невалидна
-     static bool Send( ActorId id, const MessagePtr& message );
+  Exchange(const Exchange &) = delete;
 
-     /// @brief Удалить атора из обмена
-     /// @param id актора
-     static void Remove( ActorId id );
+  Exchange(Exchange &&) = delete;
 
-private:
-     Exchange();
+  Exchange &operator=(const Exchange &) = delete;
 
-     static Exchange& GetInstance();
+  Exchange &operator=(Exchange &&) = delete;
 
-     static ActorId GetNextId();
+  ActorId Add(const ActorPtr &actor) override;
 
-     ActorId InsertImpl( const ActorPtr & actor );
+  void Delete(ActorId id) override;
 
-     bool SendImpl( ActorId id, const MessagePtr& message );
-
-     void RemoveImpl( ActorId id );
+  bool Send(ActorId id, const MessagePtr &msg) const override;
 
 private:
-     std::mutex mutex_;
-     std::unordered_map< ActorId, std::weak_ptr< IActor > > actors_;
+  static ActorId GetNextId();
+
+private:
+  ActorStoragePtr storage_;
 };
 
-}
+using ExchangePtr = std::shared_ptr<Exchange>;
 
-#endif
+}// namespace exchange
