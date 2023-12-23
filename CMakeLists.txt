@@ -14,7 +14,7 @@ set(SOURCE
         src/exchange.cpp
 )
 
-add_library(${PROJECT_NAME} STATIC ${SOURCE})
+add_library(${PROJECT_NAME} ${SOURCE})
 target_include_directories(${PROJECT_NAME} PUBLIC include)
 target_compile_options(${PROJECT_NAME} PRIVATE
         -Wall
