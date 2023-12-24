@@ -33,6 +33,4 @@ private:
   ActorStoragePtr storage_;
 };
 
-using ExchangePtr = std::shared_ptr<Exchange>;
-
 }// namespace exchange

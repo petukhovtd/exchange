@@ -3,6 +3,8 @@
 #include <exchange/iactor.h>
 #include <exchange/id.h>
 
+#include <memory>
+
 namespace exchange {
 
 class IExchange {
@@ -15,5 +17,7 @@ public:
 
   virtual bool Send(ActorId id, const MessagePtr &msg) const = 0;
 };
+
+using ExchangePtr = std::shared_ptr<IExchange>;
 
 }// namespace exchange
