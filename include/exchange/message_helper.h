@@ -19,8 +19,8 @@ public:
   MessageHelper &operator=(MessageHelper &&) = delete;
 
   template<typename... Args>
-  static Ptr Create(Args... t) {
-    return std::make_shared<T>(t...);
+  static Ptr Create(Args &&...args) {
+    return std::make_shared<T>(std::forward<Args>(args)...);
   }
 
 protected:

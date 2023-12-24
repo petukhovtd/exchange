@@ -7,5 +7,8 @@ set(SRC
         test_speed.cpp
 )
 
-add_executable(${PROJECT_NAME} ${SRC})
-target_link_libraries(${PROJECT_NAME} exchange)
+add_executable(${PROJECT_NAME}_speed ${SRC})
+target_link_libraries(${PROJECT_NAME}_speed exchange)
+
+add_executable(${PROJECT_NAME}_template test_template.cpp)
+target_link_libraries(${PROJECT_NAME}_template exchange)
