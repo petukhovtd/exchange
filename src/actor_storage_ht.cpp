@@ -6,8 +6,12 @@ void ActorStorageHT::Add(ActorId id, const ActorPtr &actor) {
   storage_[id] = actor;
 }
 
-void ActorStorageHT::Delete(ActorId id) {
-  storage_.erase(id);
+ActorPtr ActorStorageHT::Delete(ActorId id) {
+  auto it = storage_.find(id);
+
+  const auto result = it->second;
+  storage_.erase(it);
+  return result;
 }
 
 ActorPtr ActorStorageHT::Find(ActorId id) {
