@@ -7,17 +7,22 @@ Exchange::Exchange(ActorStoragePtr storage)
 
 ActorId Exchange::Add(const ActorPtr &actor) {
   const auto id = GetNextId();
+  actor->SetId(id);
   storage_->Add(id, actor);
   return id;
 }
 
 ActorId Exchange::GetNextId() {
-  static ActorId id = startId;
+  static ActorId id = defaultId;
   return ++id;
 }
 
-void Exchange::Delete(ActorId id) {
-  storage_->Delete(id);
+ActorPtr Exchange::Delete(ActorId id) {
+  auto actor = storage_->Delete(id);
+  if (actor) {
+    actor->ResetId();
+  }
+  return actor;
 }
 
 bool Exchange::Send(ActorId id, const MessagePtr &msg) const {

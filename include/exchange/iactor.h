@@ -4,24 +4,22 @@
 #include <exchange/imessage.h>
 
 #include <memory>
-#include <optional>
 
 namespace exchange {
 
 class IExchange;
 
 class IActor {
-  friend IExchange;
-
 public:
   virtual ~IActor() = default;
 
   virtual void Receive(const MessagePtr &message) = 0;
 
-  ActorIdOpt GetId() const;
+  virtual void SetId(ActorId id) = 0;
 
-private:
-  ActorIdOpt id_;
+  virtual void ResetId() = 0;
+
+  virtual ActorId GetId() = 0;
 };
 
 using ActorPtr = std::shared_ptr<IActor>;

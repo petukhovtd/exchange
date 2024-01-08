@@ -11,11 +11,13 @@ void ActorStorageV::Add(exchange::ActorId id, const ActorPtr &actor) {
   storage_.emplace_back(id, actor);
 }
 
-void ActorStorageV::Delete(ActorId id) {
+ActorPtr ActorStorageV::Delete(ActorId id) {
   const auto it = std::remove_if(storage_.begin(), storage_.end(), [id](const StorageItem &si) {
     return si.id == id;
   });
+  const auto result = it->actor;
   storage_.erase(it);
+  return result;
 }
 
 ActorPtr ActorStorageV::Find(ActorId id) {

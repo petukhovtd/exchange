@@ -17,13 +17,23 @@ public:
   void Receive(const exchange::MessagePtr &) override {
   }
 
+  void SetId(exchange::ActorId id) override {
+  }
+
+  void ResetId() override {
+  }
+
+  exchange::ActorId GetId() override {
+    return 0;
+  }
+
 private:
   std::shared_ptr<int> sharedPtr_;
   std::unique_ptr<int> uniquePtr_;
   int value_;
 };
 
-class TestMessage : public exchange::MessageHelper<TestActor> {
+class TestMessage : public exchange::MessageHelper<TestMessage> {
 public:
   TestMessage(const std::shared_ptr<int> &sharedPtr, std::unique_ptr<int> uniquePtr, int value)
       : sharedPtr_(sharedPtr), uniquePtr_(std::move(uniquePtr)), value_(value) {}

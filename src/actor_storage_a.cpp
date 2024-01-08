@@ -13,16 +13,17 @@ void ActorStorageA::Add(ActorId id, const ActorPtr &actor) {
   storage_[id] = actor;
 }
 
-void ActorStorageA::Delete(ActorId id) {
+ActorPtr ActorStorageA::Delete(ActorId id) {
   if (storage_.size() <= id) {
-    return;
+    return nullptr;
   }
+  const auto result = storage_[id];
   storage_[id] = nullptr;
+  return result;
 }
 
 ActorPtr ActorStorageA::Find(ActorId id) {
   return storage_[id];
 }
-
 
 }// namespace exchange

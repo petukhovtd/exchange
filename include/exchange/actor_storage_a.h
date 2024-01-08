@@ -16,7 +16,7 @@ public:
 
   void Add(ActorId id, const ActorPtr &actor) override;
 
-  void Delete(ActorId id) override;
+  ActorPtr Delete(ActorId id) override;
 
   ActorPtr Find(ActorId id) override;
 

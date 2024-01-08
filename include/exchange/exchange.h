@@ -22,7 +22,7 @@ public:
 
   ActorId Add(const ActorPtr &actor) override;
 
-  void Delete(ActorId id) override;
+  ActorPtr Delete(ActorId id) override;
 
   bool Send(ActorId id, const MessagePtr &msg) const override;
 

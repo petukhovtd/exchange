@@ -22,7 +22,7 @@ public:
 
   virtual void Add(ActorId id, const ActorPtr &actor) = 0;
 
-  virtual void Delete(ActorId id) = 0;
+  virtual ActorPtr Delete(ActorId id) = 0;
 
   virtual ActorPtr Find(ActorId id) = 0;
 };
