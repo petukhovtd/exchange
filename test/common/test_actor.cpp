@@ -17,3 +17,9 @@ void TestActor::Send(exchange::ActorId id, const TestData &data) const {
   const auto message = TestMessage::Create(data);
   exchange_->Send(id, message);
 }
+
+void TestActor::SetId(exchange::ActorId id) {
+}
+
+void TestActor::ResetId() {
+}

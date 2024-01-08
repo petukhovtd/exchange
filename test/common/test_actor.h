@@ -19,6 +19,10 @@ public:
 
   void Send( exchange::ActorId id, const TestData& data ) const;
 
+  void SetId(exchange::ActorId id) override;
+
+  void ResetId() override;
+
   TestData data = {};
 
 private:
