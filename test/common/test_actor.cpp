@@ -23,3 +23,7 @@ void TestActor::SetId(exchange::ActorId id) {
 
 void TestActor::ResetId() {
 }
+
+exchange::ActorId TestActor::GetId() {
+  return 0;
+}
