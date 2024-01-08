@@ -4,7 +4,7 @@
 
 namespace exchange {
 
-using ActorId = unsigned long long;
+using ActorId = size_t;
 
 const constexpr ActorId defaultId = 0;
 
