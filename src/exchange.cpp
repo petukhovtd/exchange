@@ -13,7 +13,7 @@ ActorId Exchange::Add(const ActorPtr &actor) {
 }
 
 ActorId Exchange::GetNextId() {
-  static ActorId id = startId;
+  static ActorId id = defaultId;
   return ++id;
 }
 
