@@ -18,6 +18,8 @@ public:
   virtual void SetId(ActorId id) = 0;
 
   virtual void ResetId() = 0;
+
+  virtual ActorId GetId() = 0;
 };
 
 using ActorPtr = std::shared_ptr<IActor>;

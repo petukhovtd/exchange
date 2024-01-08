@@ -23,6 +23,10 @@ public:
   void ResetId() override {
   }
 
+  exchange::ActorId GetId() override {
+    return 0;
+  }
+
 private:
   std::shared_ptr<int> sharedPtr_;
   std::unique_ptr<int> uniquePtr_;

@@ -23,6 +23,8 @@ public:
 
   void ResetId() override;
 
+  exchange::ActorId GetId() override;
+
   TestData data = {};
 
 private:
