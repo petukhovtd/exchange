@@ -19,6 +19,8 @@ public:
 
   ActorHelper &operator=(ActorHelper &&) = delete;
 
+  ~ActorHelper() override = default;
+
   template<typename... Args>
   static Ptr Create(Args &&...args) {
     return std::make_shared<T>(std::forward<Args>(args)...);

@@ -20,6 +20,8 @@ public:
 
   Exchange &operator=(Exchange &&) = delete;
 
+  ~Exchange() override = default;
+
   ActorId Add(const ActorPtr &actor) override;
 
   ActorPtr Delete(ActorId id) override;
