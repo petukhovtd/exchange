@@ -2,8 +2,9 @@
 
 #include <chrono>
 
-struct Timer
-{
+namespace test {
+
+struct Timer {
   using Clock = std::chrono::system_clock;
   using DiffType = Clock::time_point::duration::rep;
   std::chrono::system_clock::time_point::duration::rep diff{};
@@ -15,5 +16,6 @@ struct Timer
   void Start();
 
   void Stop();
-
 };
+
+}// namespace test

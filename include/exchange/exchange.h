@@ -20,6 +20,8 @@ public:
 
   Exchange &operator=(Exchange &&) = delete;
 
+  ~Exchange() override = default;
+
   ActorId Add(const ActorPtr &actor) override;
 
   ActorPtr Delete(ActorId id) override;
@@ -27,10 +29,11 @@ public:
   bool Send(ActorId id, const MessagePtr &msg) const override;
 
 private:
-  static ActorId GetNextId();
+  ActorId GetNextId();
 
 private:
   ActorStoragePtr storage_;
+  ActorId generatorId_;
 };
 
 }// namespace exchange

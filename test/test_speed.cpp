@@ -1,11 +1,14 @@
+#include <gtest/gtest.h>
+
 #include "common/test_actor.h"
 #include "common/test_message.h"
-#include "common/test_types.h"
 #include "common/timer.h"
+
 #include "exchange/actor_storage_a.h"
 #include <exchange/actor_storage_ht.h>
 #include <exchange/actor_storage_v.h>
 #include <exchange/exchange.h>
+
 #include <iomanip>
 #include <iostream>
 #include <vector>
@@ -16,7 +19,11 @@ struct TestParams {
   exchange::ExchangePtr exchange;
 };
 
-void PrintReport(std::ostream &os, const std::string &name, const TestParams &params, const Timer &timer) {
+using TestData = int;
+using TestActor = test::TestActor<TestData>;
+using TestMessage = test::TestMessage<TestData>;
+
+void PrintReport(std::ostream &os, const std::string &name, const TestParams &params, const test::Timer &timer) {
   os
       << std::setw(15) << name
       << std::setw(15) << "actors: " << std::setw(10) << params.receivers
@@ -35,7 +42,7 @@ void NoExchangeTest(const TestParams &params) {
     receivers.push_back(TestActor::Create(params.exchange));
   }
 
-  Timer timer;
+  test::Timer timer;
   timer.Start();
   for (size_t i = 0; i < params.messages; ++i) {
     const size_t actorIndex = i % params.receivers;
@@ -52,66 +59,78 @@ void ExchangeTest(const std::string &name, const TestParams &params) {
 
   auto sender = TestActor::Create(params.exchange);
 
+  std::vector<exchange::ActorId> receivers;
+  receivers.reserve(params.receivers);
   for (int i = 0; i < params.receivers; ++i) {
     const auto receiver = TestActor::Create(params.exchange);
-    params.exchange->Add(receiver);
+    const auto id = params.exchange->Add(receiver);
+    receivers.push_back(id);
   }
 
-  Timer timer;
+  test::Timer timer;
   timer.Start();
   for (size_t i = 0; i < params.messages; ++i) {
-    const size_t actorId = i % params.receivers + 1;
-    sender->Send(actorId, data);
+    const size_t actorId = receivers[i % receivers.size()];
+    if (!sender->Send(actorId, data)) {
+      throw std::runtime_error("send failed to: " + std::to_string(actorId));
+    }
     ++data;
   }
   timer.Stop();
   PrintReport(std::cout, name, params, timer);
 }
 
-int main() {
-  std::vector<TestParams> params =
-      {
-          TestParams{1, 1, nullptr},
-          TestParams{1, 100, nullptr},
-          TestParams{1, 1'000, nullptr},
-          TestParams{1, 1'000'000, nullptr},
-          TestParams{10, 1, nullptr},
-          TestParams{10, 100, nullptr},
-          TestParams{10, 1'000, nullptr},
-          TestParams{10, 1'000'000, nullptr},
-          TestParams{100, 1, nullptr},
-          TestParams{100, 100, nullptr},
-          TestParams{100, 1'000, nullptr},
-          TestParams{100, 1'000'000, nullptr},
-          TestParams{1000, 1, nullptr},
-          TestParams{1000, 100, nullptr},
-          TestParams{1000, 1'000, nullptr},
-          TestParams{1000, 1'000'000, nullptr},
-          TestParams{100000, 1, nullptr},
-          TestParams{100000, 100, nullptr},
-          TestParams{100000, 1'000, nullptr},
-          TestParams{100000, 1'000'000, nullptr},
-      };
+struct SpeedTest : public testing::TestWithParam<TestParams> {
+};
 
-  for (auto param : params) {
-    NoExchangeTest(param);
-    {
-      exchange::ActorStoragePtr asv = std::make_unique<exchange::ActorStorageA>(param.receivers);
-      const auto ex = std::make_shared<exchange::Exchange>(std::move(asv));
-      param.exchange = ex;
-      ExchangeTest("ActorStorageA", param);
-    }
-    {
-      exchange::ActorStoragePtr asv = std::make_unique<exchange::ActorStorageV>();
-      const auto ex = std::make_shared<exchange::Exchange>(std::move(asv));
-      param.exchange = ex;
-      ExchangeTest("ActorStorageV", param);
-    }
-    {
-      exchange::ActorStoragePtr asv = std::make_unique<exchange::ActorStorageHT>();
-      const auto ex = std::make_shared<exchange::Exchange>(std::move(asv));
-      param.exchange = ex;
-      ExchangeTest("ActorStorageHT", param);
-    }
+INSTANTIATE_TEST_SUITE_P(SpeedSend, SpeedTest, testing::Values(
+  TestParams{1, 1, nullptr},
+  TestParams{1, 10, nullptr},
+  TestParams{1, 100, nullptr},
+  TestParams{1, 1'000, nullptr},
+  TestParams{1, 10'000, nullptr},
+  TestParams{10, 1, nullptr},
+  TestParams{10, 10, nullptr},
+  TestParams{10, 100, nullptr},
+  TestParams{10, 1'000, nullptr},
+  TestParams{10, 10'000, nullptr},
+  TestParams{100, 1, nullptr},
+  TestParams{100, 10, nullptr},
+  TestParams{100, 100, nullptr},
+  TestParams{100, 1'000, nullptr},
+  TestParams{100, 10'000, nullptr},
+  TestParams{1000, 1, nullptr},
+  TestParams{1000, 10, nullptr},
+  TestParams{1000, 100, nullptr},
+  TestParams{1000, 1'000, nullptr},
+  TestParams{1000, 10'000, nullptr},
+  TestParams{10'000, 1, nullptr},
+  TestParams{10'000, 10, nullptr},
+  TestParams{10'000, 100, nullptr},
+  TestParams{10'000, 1'000, nullptr},
+  TestParams{10'000, 10'000, nullptr}
+ )
+);
+
+TEST_P(SpeedTest, SpeedTest) {
+  auto param = GetParam();
+  NoExchangeTest(param);
+  {
+    exchange::ActorStoragePtr as = std::make_unique<exchange::ActorStorageA>(param.receivers);
+    const auto ex = std::make_shared<exchange::Exchange>(std::move(as));
+    param.exchange = ex;
+    ExchangeTest("ActorStorageA", param);
+  }
+  {
+    exchange::ActorStoragePtr as = std::make_unique<exchange::ActorStorageV>();
+    const auto ex = std::make_shared<exchange::Exchange>(std::move(as));
+    param.exchange = ex;
+    ExchangeTest("ActorStorageV", param);
+  }
+  {
+    exchange::ActorStoragePtr as = std::make_unique<exchange::ActorStorageHT>();
+    const auto ex = std::make_shared<exchange::Exchange>(std::move(as));
+    param.exchange = ex;
+    ExchangeTest("ActorStorageHT", param);
   }
 }

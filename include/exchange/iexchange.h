@@ -19,5 +19,6 @@ public:
 };
 
 using ExchangePtr = std::shared_ptr<IExchange>;
+using ExchangeWeak = std::weak_ptr<IExchange>;
 
 }// namespace exchange
