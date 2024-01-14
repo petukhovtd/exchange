@@ -3,7 +3,7 @@
 namespace exchange {
 
 Exchange::Exchange(ActorStoragePtr storage)
-    : storage_(std::move(storage)) {}
+    : storage_(std::move(storage)), generatorId_(exchange::defaultId) {}
 
 ActorId Exchange::Add(const ActorPtr &actor) {
   const auto id = GetNextId();
@@ -13,8 +13,7 @@ ActorId Exchange::Add(const ActorPtr &actor) {
 }
 
 ActorId Exchange::GetNextId() {
-  static ActorId id = defaultId;
-  return ++id;
+  return ++generatorId_;
 }
 
 ActorPtr Exchange::Delete(ActorId id) {

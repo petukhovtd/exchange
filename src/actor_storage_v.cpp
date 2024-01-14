@@ -12,10 +12,13 @@ void ActorStorageV::Add(exchange::ActorId id, const ActorPtr &actor) {
 }
 
 ActorPtr ActorStorageV::Delete(ActorId id) {
-  const auto it = std::remove_if(storage_.begin(), storage_.end(), [id](const StorageItem &si) {
+  const auto it = std::find_if(storage_.cbegin(), storage_.cend(), [id](const StorageItem &si) {
     return si.id == id;
   });
-  const auto result = it->actor;
+  if (storage_.end() == it) {
+    return nullptr;
+  }
+  auto result = it->actor;
   storage_.erase(it);
   return result;
 }

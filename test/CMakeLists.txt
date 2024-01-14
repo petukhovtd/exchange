@@ -1,14 +1,17 @@
-project(test)
+project(exchange-test LANGUAGES CXX)
 
-set(SRC
-        common/test_message.cpp
-        common/test_actor.cpp
+message(STATUS "Build ${PROJECT_NAME}")
+
+add_executable(${PROJECT_NAME}
+        test_exchange.cpp
+        test_actor_helper.cpp
+)
+target_link_libraries(${PROJECT_NAME} exchange gtest gtest_main)
+add_test(NAME ${PROJECT_NAME} COMMAND ${PROJECT_NAME})
+
+
+add_executable(${PROJECT_NAME}-speed
         common/timer.cpp
         test_speed.cpp
 )
-
-add_executable(${PROJECT_NAME}_speed ${SRC})
-target_link_libraries(${PROJECT_NAME}_speed exchange)
-
-add_executable(${PROJECT_NAME}_template test_template.cpp)
-target_link_libraries(${PROJECT_NAME}_template exchange)
+target_link_libraries(${PROJECT_NAME}-speed exchange gtest gtest_main)

@@ -1,18 +1,19 @@
 #pragma once
 
-#include "test_types.h"
-
 #include <exchange/message_helper.h>
 
-class TestMessage : public exchange::MessageHelper<TestMessage> {
-public:
+namespace test {
+
+template<typename T>
+struct TestMessage : exchange::MessageHelper<TestMessage<T>> {
   TestMessage() = default;
 
-  explicit TestMessage(const TestData &data);
+  explicit TestMessage(const T &_data)
+      : data(_data) {}
 
   ~TestMessage() override = default;
 
-  TestData data{};
-
-private:
+  T data{};
 };
+
+}// namespace test

@@ -5,15 +5,26 @@ include(cmake/utils.cmake)
 exchange_extract_version()
 
 project(exchange VERSION ${EXCHANGE_VERSION} LANGUAGES CXX)
-message(STATUS "Build exchange: ${EXCHANGE_VERSION}")
+message(STATUS "Build ${PROJECT_NAME}: ${EXCHANGE_VERSION}")
 
 if(NOT CMAKE_CXX_STANDARD)
     set(CMAKE_CXX_STANDARD 14)
     set(CMAKE_CXX_STANDARD_REQUIRED ON)
 endif()
 
-option(EXCHANGE_TESTS "Build tests" OFF)
+option(EXCHANGE_BUILD_TESTS "Build tests" OFF)
 option(EXCHANGE_BUILD_SHARED "Build shared library" OFF)
+
+if(NOT DEFINED EXCHANGE_MASTER_PROJECT)
+    if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+        set(EXCHANGE_MASTER_PROJECT ON)
+        set(EXCHANGE_BUILD_TESTS ON)
+    else()
+        set(EXCHANGE_MASTER_PROJECT OFF)
+    endif()
+endif()
+
+add_subdirectory(contrib)
 
 set(SOURCE
         src/actor_storage_ht.cpp
@@ -45,6 +56,7 @@ target_compile_options(${PROJECT_NAME} PRIVATE
         -Wno-uninitialized
 )
 
-if (EXCHANGE_TESTS)
+if (EXCHANGE_BUILD_TESTS)
+    enable_testing()
     add_subdirectory(test)
 endif ()

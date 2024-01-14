@@ -1,16 +1,17 @@
 #include "timer.h"
 
-Timer::DiffType Timer::Now()
-{
+namespace test {
+
+Timer::DiffType Timer::Now() {
   return Clock ::now().time_since_epoch().count();
 }
 
-void Timer::Start()
-{
+void Timer::Start() {
   diff = Now();
 }
 
-void Timer::Stop()
-{
+void Timer::Stop() {
   diff = Now() - diff;
 }
+
+}// namespace test

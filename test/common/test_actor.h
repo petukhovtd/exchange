@@ -1,33 +1,55 @@
 #pragma once
 
-#include "test_types.h"
 #include "test_message.h"
 #include <exchange/actor_helper.h>
 #include <exchange/exchange.h>
 
+namespace test {
 
-class TestActor: public exchange::ActorHelper< TestActor >
-{
+template<typename T>
+class TestActor : public exchange::ActorHelper<TestActor<T>> {
 public:
-  explicit TestActor(const exchange::ExchangePtr &exchange);
+  explicit TestActor(const exchange::ExchangePtr &exchange)
+      : exchange_(exchange), id_(exchange::defaultId) {
+  }
 
-  ~TestActor() override = default;
+  void Receive(const exchange::MessagePtr &message) override {
+    const auto ptr = std::dynamic_pointer_cast<TestMessage<T>>(message);
+    if (ptr) {
+      data = ptr->data;
+    }
+  }
 
-  void Receive(const exchange::MessagePtr &message) override;
+  bool Send(exchange::ActorId id) const {
+    return Send(id, data);
+  }
 
-  void Send( exchange::ActorId id ) const;
+  bool Send(exchange::ActorId id, const T &_data) const {
+    const auto message = TestMessage<T>::Create(_data);
+    auto exchange = exchange_.lock();
+    if (exchange) {
+      return exchange->Send(id, message);
+    }
+    return false;
+  }
 
-  void Send( exchange::ActorId id, const TestData& data ) const;
+  void SetId(exchange::ActorId id) override {
+    id_ = id;
+  }
 
-  void SetId(exchange::ActorId id) override;
+  void ResetId() override {
+    id_ = exchange::defaultId;
+  }
 
-  void ResetId() override;
+  exchange::ActorId GetId() override {
+    return id_;
+  }
 
-  exchange::ActorId GetId() override;
-
-  TestData data = {};
+  T data = {};
 
 private:
-  exchange::ExchangePtr exchange_;
+  exchange::ExchangeWeak exchange_;
+  exchange::ActorId id_;
 };
 
+}// namespace test
