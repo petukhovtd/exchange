@@ -5,11 +5,11 @@
 
 namespace exchange {
 
-class ActorStorageHT : public IActorStorage {
+class ActorStorageTable : public IActorStorage {
 public:
-  ActorStorageHT() = default;
+  ActorStorageTable() = default;
 
-  ~ActorStorageHT() override = default;
+  ~ActorStorageTable() override = default;
 
   void Add(ActorId id, const ActorPtr &actor) override;
 

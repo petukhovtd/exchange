@@ -2,18 +2,14 @@
 
 namespace exchange {
 
-Exchange::Exchange(ActorStoragePtr storage)
-    : storage_(std::move(storage)), generatorId_(exchange::defaultId) {}
+Exchange::Exchange(ActorStoragePtr storage, const IdGeneratorPtr &generator)
+    : storage_(std::move(storage)), generator_(generator) {}
 
 ActorId Exchange::Add(const ActorPtr &actor) {
-  const auto id = GetNextId();
+  const auto id = generator_->Next();
   actor->SetId(id);
   storage_->Add(id, actor);
   return id;
-}
-
-ActorId Exchange::GetNextId() {
-  return ++generatorId_;
 }
 
 ActorPtr Exchange::Delete(ActorId id) {
@@ -21,6 +17,7 @@ ActorPtr Exchange::Delete(ActorId id) {
   if (actor) {
     actor->ResetId();
   }
+  generator_->Unused(id);
   return actor;
 }
 

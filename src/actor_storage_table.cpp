@@ -1,12 +1,12 @@
-#include <exchange/actor_storage_ht.h>
+#include <exchange/actor_storage_table.h>
 
 namespace exchange {
 
-void ActorStorageHT::Add(ActorId id, const ActorPtr &actor) {
+void ActorStorageTable::Add(ActorId id, const ActorPtr &actor) {
   storage_[id] = actor;
 }
 
-ActorPtr ActorStorageHT::Delete(ActorId id) {
+ActorPtr ActorStorageTable::Delete(ActorId id) {
   auto it = storage_.find(id);
   if (storage_.end() == it) {
     return nullptr;
@@ -16,7 +16,7 @@ ActorPtr ActorStorageHT::Delete(ActorId id) {
   return result;
 }
 
-ActorPtr ActorStorageHT::Find(ActorId id) {
+ActorPtr ActorStorageTable::Find(ActorId id) {
   const auto it = storage_.find(id);
   if (storage_.end() == it) {
     return nullptr;

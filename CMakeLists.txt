@@ -27,9 +27,10 @@ endif()
 add_subdirectory(contrib)
 
 set(SOURCE
-        src/actor_storage_ht.cpp
-        src/actor_storage_v.cpp
-        src/actor_storage_a.cpp
+        src/actor_storage_table.cpp
+        src/actor_storage_line.cpp
+        src/id_generator_forward.cpp
+        src/id_generator_reuse.cpp
         src/exchange.cpp
 )
 

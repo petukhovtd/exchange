@@ -4,10 +4,10 @@
 #include "common/test_message.h"
 #include "common/timer.h"
 
-#include "exchange/actor_storage_a.h"
-#include <exchange/actor_storage_ht.h>
-#include <exchange/actor_storage_v.h>
+#include <exchange/actor_storage_line.h>
+#include <exchange/actor_storage_table.h>
 #include <exchange/exchange.h>
+#include <exchange/id_generator_forward.h>
 
 #include <iomanip>
 #include <iostream>
@@ -25,11 +25,11 @@ using TestMessage = test::TestMessage<TestData>;
 
 void PrintReport(std::ostream &os, const std::string &name, const TestParams &params, const test::Timer &timer) {
   os
-      << std::setw(15) << name
+      << std::setw(20) << name
       << std::setw(15) << "actors: " << std::setw(10) << params.receivers
       << std::setw(15) << "messages: " << std::setw(10) << params.messages
       << std::setw(15) << "time: " << std::setw(10) << timer.diff
-      << std::setw(15) << "mpn: " << std::setw(10) << static_cast<double>(params.messages) / timer.diff
+      << std::setw(15) << "mpn: " << std::setw(20) << static_cast<double>(params.messages) / timer.diff
       << std::endl;
 }
 
@@ -116,21 +116,17 @@ TEST_P(SpeedTest, SpeedTest) {
   auto param = GetParam();
   NoExchangeTest(param);
   {
-    exchange::ActorStoragePtr as = std::make_unique<exchange::ActorStorageA>(param.receivers);
-    const auto ex = std::make_shared<exchange::Exchange>(std::move(as));
+    auto generator = std::make_shared<exchange::IdGeneratorForward>();
+    exchange::ActorStoragePtr as = std::make_unique<exchange::ActorStorageLine>(param.receivers);
+    const auto ex = std::make_shared<exchange::Exchange>(std::move(as), generator);
     param.exchange = ex;
-    ExchangeTest("ActorStorageA", param);
+    ExchangeTest("ActorStorageLine", param);
   }
   {
-    exchange::ActorStoragePtr as = std::make_unique<exchange::ActorStorageV>();
-    const auto ex = std::make_shared<exchange::Exchange>(std::move(as));
+    auto generator = std::make_shared<exchange::IdGeneratorForward>();
+    exchange::ActorStoragePtr as = std::make_unique<exchange::ActorStorageTable>();
+    const auto ex = std::make_shared<exchange::Exchange>(std::move(as), generator);
     param.exchange = ex;
-    ExchangeTest("ActorStorageV", param);
-  }
-  {
-    exchange::ActorStoragePtr as = std::make_unique<exchange::ActorStorageHT>();
-    const auto ex = std::make_shared<exchange::Exchange>(std::move(as));
-    param.exchange = ex;
-    ExchangeTest("ActorStorageHT", param);
+    ExchangeTest("ActorStorageTable", param);
   }
 }
