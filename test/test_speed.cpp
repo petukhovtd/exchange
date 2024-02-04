@@ -29,7 +29,7 @@ void PrintReport(std::ostream &os, const std::string &name, const TestParams &pa
       << std::setw(15) << "actors: " << std::setw(10) << params.receivers
       << std::setw(15) << "messages: " << std::setw(10) << params.messages
       << std::setw(15) << "time: " << std::setw(10) << timer.diff
-      << std::setw(20) << "mpn: " << std::setw(10) << static_cast<double>(params.messages) / timer.diff
+      << std::setw(15) << "mpn: " << std::setw(20) << static_cast<double>(params.messages) / timer.diff
       << std::endl;
 }
 
