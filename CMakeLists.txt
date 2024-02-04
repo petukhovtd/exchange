@@ -30,6 +30,8 @@ set(SOURCE
         src/actor_storage_ht.cpp
         src/actor_storage_v.cpp
         src/actor_storage_a.cpp
+        src/id_generator_forward.cpp
+        src/id_generator_v.cpp
         src/exchange.cpp
 )
 

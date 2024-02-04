@@ -7,6 +7,7 @@
 #include "exchange/actor_storage_a.h"
 #include <exchange/actor_storage_ht.h>
 #include <exchange/actor_storage_v.h>
+#include <exchange/id_generator_forward.h>
 #include <exchange/exchange.h>
 
 #include <iomanip>
@@ -116,20 +117,23 @@ TEST_P(SpeedTest, SpeedTest) {
   auto param = GetParam();
   NoExchangeTest(param);
   {
+    auto generator = std::make_shared<exchange::IdGeneratorForward>();
     exchange::ActorStoragePtr as = std::make_unique<exchange::ActorStorageA>(param.receivers);
-    const auto ex = std::make_shared<exchange::Exchange>(std::move(as));
+    const auto ex = std::make_shared<exchange::Exchange>(std::move(as), generator);
     param.exchange = ex;
     ExchangeTest("ActorStorageA", param);
   }
   {
+    auto generator = std::make_shared<exchange::IdGeneratorForward>();
     exchange::ActorStoragePtr as = std::make_unique<exchange::ActorStorageV>();
-    const auto ex = std::make_shared<exchange::Exchange>(std::move(as));
+    const auto ex = std::make_shared<exchange::Exchange>(std::move(as), generator);
     param.exchange = ex;
     ExchangeTest("ActorStorageV", param);
   }
   {
+    auto generator = std::make_shared<exchange::IdGeneratorForward>();
     exchange::ActorStoragePtr as = std::make_unique<exchange::ActorStorageHT>();
-    const auto ex = std::make_shared<exchange::Exchange>(std::move(as));
+    const auto ex = std::make_shared<exchange::Exchange>(std::move(as), generator);
     param.exchange = ex;
     ExchangeTest("ActorStorageHT", param);
   }

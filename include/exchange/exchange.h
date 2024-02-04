@@ -4,13 +4,14 @@
 #include <exchange/iactor_storage.h>
 #include <exchange/id.h>
 #include <exchange/iexchange.h>
+#include <exchange/iid_generator.h>
 #include <exchange/imessage.h>
 
 namespace exchange {
 
 class Exchange : public IExchange {
 public:
-  explicit Exchange(ActorStoragePtr storage);
+  explicit Exchange(ActorStoragePtr storage, const IdGeneratorPtr& generator);
 
   Exchange(const Exchange &) = delete;
 
@@ -29,11 +30,8 @@ public:
   bool Send(ActorId id, const MessagePtr &msg) const override;
 
 private:
-  ActorId GetNextId();
-
-private:
   ActorStoragePtr storage_;
-  ActorId generatorId_;
+  IdGeneratorPtr generator_;
 };
 
 }// namespace exchange

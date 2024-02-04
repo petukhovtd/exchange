@@ -6,6 +6,7 @@
 #include <exchange/actor_storage_a.h>
 #include <exchange/actor_storage_ht.h>
 #include <exchange/actor_storage_v.h>
+#include <exchange/id_generator_forward.h>
 #include <exchange/exchange.h>
 #include <random>
 
@@ -29,7 +30,8 @@ using ActorStorageTypes = ::testing::Types<exchange::ActorStorageA, exchange::Ac
 TYPED_TEST_SUITE(ExchangeTest, ActorStorageTypes);
 
 TYPED_TEST(ExchangeTest, AddDelete) {
-  auto exchange = std::make_shared<exchange::Exchange>(std::move(this->storage));
+  auto generator = std::make_shared<exchange::IdGeneratorForward>();
+  auto exchange = std::make_shared<exchange::Exchange>(std::move(this->storage), generator);
 
   auto actor = test::TestActor<DataType>::Create(exchange);
   EXPECT_EQ(actor->GetId(), exchange::defaultId);
@@ -46,7 +48,8 @@ TYPED_TEST(ExchangeTest, AddDelete) {
 }
 
 TYPED_TEST(ExchangeTest, Send) {
-  auto exchange = std::make_shared<exchange::Exchange>(std::move(this->storage));
+  auto generator = std::make_shared<exchange::IdGeneratorForward>();
+  auto exchange = std::make_shared<exchange::Exchange>(std::move(this->storage), generator);
 
   auto actor = test::TestActor<DataType>::Create(exchange);
   const auto actorId = exchange->Add(actor);
@@ -58,7 +61,8 @@ TYPED_TEST(ExchangeTest, Send) {
 }
 
 TYPED_TEST(ExchangeTest, SendMany) {
-  auto exchange = std::make_shared<exchange::Exchange>(std::move(this->storage));
+  auto generator = std::make_shared<exchange::IdGeneratorForward>();
+  auto exchange = std::make_shared<exchange::Exchange>(std::move(this->storage), generator);
 
   const size_t size = 100;
   const size_t minActors = 100;
@@ -90,7 +94,9 @@ TYPED_TEST(ExchangeTest, SendMany) {
   }
 
   DataType data = 0;
-  for (const auto &[id, actor] : actors) {
+  for (const auto &pair : actors) {
+    const auto& id = pair.first;
+    const auto& actor = pair.second;
     ++data;
     const auto msg = test::TestMessage<DataType>::Create(data);
     EXPECT_TRUE(exchange->Send(id, msg));
