@@ -11,7 +11,7 @@ namespace exchange {
 
 class Exchange : public IExchange {
 public:
-  explicit Exchange(ActorStoragePtr storage, const IdGeneratorPtr& generator);
+  explicit Exchange(ActorStoragePtr storage, const IdGeneratorPtr &generator);
 
   Exchange(const Exchange &) = delete;
 

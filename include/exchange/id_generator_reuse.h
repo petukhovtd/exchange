@@ -6,13 +6,13 @@
 
 namespace exchange {
 
-class IdGeneratorV : public IIdGenerator {
+class IdGeneratorReuse : public IIdGenerator {
 public:
-  IdGeneratorV() = default;
+  IdGeneratorReuse() = default;
 
-  explicit IdGeneratorV(size_t preSize);
+  explicit IdGeneratorReuse(size_t preSize);
 
-  ~IdGeneratorV() override = default;
+  ~IdGeneratorReuse() override = default;
 
   ActorId Next() override;
 

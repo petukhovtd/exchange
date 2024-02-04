@@ -1,12 +1,12 @@
-#include <exchange/id_generator_v.h>
+#include <exchange/id_generator_reuse.h>
 
 namespace exchange {
 
-IdGeneratorV::IdGeneratorV(size_t preSize) : IdGeneratorV() {
+IdGeneratorReuse::IdGeneratorReuse(size_t preSize) : IdGeneratorReuse() {
   unused_.reserve(preSize);
 }
 
-ActorId IdGeneratorV::Next() {
+ActorId IdGeneratorReuse::Next() {
   if (!unused_.empty()) {
     const auto id = unused_.back();
     unused_.pop_back();
@@ -15,7 +15,7 @@ ActorId IdGeneratorV::Next() {
   return ++id_;
 }
 
-void IdGeneratorV::Unused(ActorId id) {
+void IdGeneratorReuse::Unused(ActorId id) {
   unused_.push_back(id);
 }
 

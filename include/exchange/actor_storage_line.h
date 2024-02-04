@@ -5,14 +5,13 @@
 
 namespace exchange {
 
-class ActorStorageA : public IActorStorage {
+class ActorStorageLine : public IActorStorage {
 public:
+  ActorStorageLine() = default;
 
-  ActorStorageA() = default;
+  explicit ActorStorageLine(size_t preSize);
 
-  explicit ActorStorageA( size_t preSize );
-
-  ~ActorStorageA() override = default;
+  ~ActorStorageLine() override = default;
 
   void Add(ActorId id, const ActorPtr &actor) override;
 

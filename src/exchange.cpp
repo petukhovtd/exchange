@@ -2,7 +2,7 @@
 
 namespace exchange {
 
-Exchange::Exchange(ActorStoragePtr storage, const IdGeneratorPtr& generator)
+Exchange::Exchange(ActorStoragePtr storage, const IdGeneratorPtr &generator)
     : storage_(std::move(storage)), generator_(generator) {}
 
 ActorId Exchange::Add(const ActorPtr &actor) {

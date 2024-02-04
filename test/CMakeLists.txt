@@ -3,6 +3,9 @@ project(exchange-test LANGUAGES CXX)
 message(STATUS "Build ${PROJECT_NAME}")
 
 add_executable(${PROJECT_NAME}
+        test_actor_storage.cpp
+        test_id_generator.cpp
+
         test_exchange.cpp
         test_actor_helper.cpp
 )
