@@ -14,11 +14,13 @@ endif()
 
 option(EXCHANGE_BUILD_TESTS "Build tests" OFF)
 option(EXCHANGE_BUILD_SHARED "Build shared library" OFF)
+option(EXCHANGE_BUILD_EXAMPLE "Build example" OFF)
 
 if(NOT DEFINED EXCHANGE_MASTER_PROJECT)
     if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
         set(EXCHANGE_MASTER_PROJECT ON)
         set(EXCHANGE_BUILD_TESTS ON)
+        set(EXCHANGE_BUILD_EXAMPLE ON)
     else()
         set(EXCHANGE_MASTER_PROJECT OFF)
     endif()
@@ -60,4 +62,8 @@ target_compile_options(${PROJECT_NAME} PRIVATE
 if (EXCHANGE_BUILD_TESTS)
     enable_testing()
     add_subdirectory(test)
+endif ()
+
+if (EXCHANGE_BUILD_EXAMPLE)
+    add_subdirectory(example)
 endif ()

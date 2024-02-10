@@ -1,25 +1,17 @@
-# exchange
-Exchange is an open source implementation of the simple actor model. 
-It isn't thread safe. You have to use external tools for thread safe and thread management
-## Get and build
-```sh
-git clone https://github.com/petukhovtd/exchange.git
-cd exchange
-mkdir build
-cd build 
-cmake ..
-```
-## Example
-Create message
-```c++
-struct Message : exchange::MessageHelper<Message> {
-    ~Message() override = default;
-    std::string data{};
-};
-```
+#include <exchange/actor_helper.h>
+#include <exchange/message_helper.h>
+#include <exchange/id_generator_forward.h>
+#include <exchange/actor_storage_line.h>
+#include <exchange/exchange.h>
 
-Create actor
-```c++
+#include <string>
+#include <iostream>
+
+struct Message : exchange::MessageHelper<Message> {
+  ~Message() override = default;
+  std::string data{};
+};
+
 struct Actor : exchange::ActorHelper<Actor> {
   explicit Actor(const exchange::ExchangePtr &_exchange)
       : exchange(_exchange) {}
@@ -59,22 +51,17 @@ struct Actor : exchange::ActorHelper<Actor> {
   // Use weak ptr, because exchange store shared_ptr<Actor>
   exchange::ExchangeWeak exchange;
 };
-```
-Create exchange
-```c++
-auto idGenerator = std::make_shared<exchange::IdGeneratorForward>();
-auto storage = std::make_unique<exchange::ActorStorageLine>();
-auto exchange = std::make_shared<exchange::Exchange>(std::move(storage), idGenerator);
-```
-Create and register actors
-```c++
-auto sender = Actor::Create(exchange);
-auto receiver = Actor::Create(exchange);
 
-const auto senderId = exchange->Add(sender);
-const auto receiverId = exchange->Add(receiver);
-```
-Send message
-```c++
-sender->Send( receiverId, "Hello World!" );
-```
+int main() {
+  auto idGenerator = std::make_shared<exchange::IdGeneratorForward>();
+  auto storage = std::make_unique<exchange::ActorStorageLine>();
+  auto exchange = std::make_shared<exchange::Exchange>(std::move(storage), idGenerator);
+
+  auto sender = Actor::Create(exchange);
+  auto receiver = Actor::Create(exchange);
+
+  const auto senderId = exchange->Add(sender);
+  const auto receiverId = exchange->Add(receiver);
+
+  sender->Send( receiverId, "Hello World!" );
+}
